@@ -1,0 +1,46 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+
+# Django specific files
+*.sqlite3
+db.sqlite3
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE and editor-specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.vscode/
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Pytest or other testing tools
+*.cover
+*.coverage
+*.hypothesis/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Node.js dependencies (if using Node.js with Django for frontend)
+node_modules/
+
+# Log files
+*.log
+
+# Media files
+media/
+
+# Static files (if you're using collectstatic, it’s better to exclude this)
+static/

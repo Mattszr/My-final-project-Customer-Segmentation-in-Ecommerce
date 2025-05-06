@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Search Results</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Found results for "{{ query }}"</p>
+        </div>
+    </div>
+</header>
+
+{% include 'navbar.html' %}
+
+<div class="container mt-4">
+    {% if results %}
+        {% for product in results %}
+            <div class="card mb-3 shadow-sm">
+                <div class="row g-0 align-items-center">
+                    <!-- Product Pictures -->
+                    <div class="col-md-3 text-center p-2">
+                        <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}" style="max-height: 100px;">
+                    </div>
+
+                    <!-- Product Info  -->
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text text-muted">{{ product.description }}</p>
+
+                            {% if product.is_sale %}
+                                <p class="card-text">
+                                    <small class="text-muted"><strike>£{{ product.price }}</strike></small>
+                                    <strong class="text-success">£{{ product.sale_price }}</strong>
+                                </p>
+                            {% else %}
+                                <p class="card-text"><strong>£{{ product.price }}</strong></p>
+                            {% endif %}
+
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="{% url 'product' product.id %}" class="btn btn-sm btn-outline-dark">View Product</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info mt-5" role="alert">
+            No products found matching your search.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

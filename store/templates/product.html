@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block content %}
+        <header class="bg-dark py-5">
+          <div class="container px-4 px-lg-5 my-5">
+              <div class="text-center text-white">
+                  <h1 class="display-4 fw-bolder">Product {{ product.name }} page</h1>
+                  <p class="lead fw-normal text-white-50 mb-0">Product Page</p>
+              </div>
+          </div>
+        </header>
+        {% include 'navbar.html' %}
+
+        <div class="container">
+          <br>
+        
+          <div class="card mb-3" style="max-width: 800px;">
+            <div class="row g-0">
+        
+              <div class="col-md-8">
+                <div class="card-body custom-card-body">
+                  <div>
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <br/> ID: {{ product.id }}
+                    <p class="card-text">{{ product.description }}</p>
+        
+                    {% if product.is_sale %}
+                      <strike>£{{ product.price }}</strike> {{ product.sale_price }}
+                    {% else %}
+                      £{{ product.price }}
+                    {% endif %}
+        
+                    <br/><br/>
+                    <div class="row align-items-start">
+                      <div class="col-md-2">Quantity</div>
+                      <div class="col-md-2">
+                        <select class="form-select form-select-sm" id="qty-cart">
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <br>
+        
+                    <button type="button" value="{{ product.id }}" class="btn btn-success btn-lg" id="add-cart">
+                      Add to Cart
+                    </button>
+        
+                    <button type="button" class="btn btn-outline-danger btn-like" data-product-id="{{ product.id }}" id="like-button-{{ product.id }}">
+                      <i class="bi bi-heart"></i> Like
+                    </button>
+                    
+                    
+        
+                    <br/><br/>
+                    <a href="{% url 'index' %}" class="btn btn-secondary">Home</a>
+                  </div>
+                </div>
+              </div>
+        
+              <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
+        
+                <img id="main-product-image" src="{{ product.image.url }}" class="photo img-fluid mb-3" alt="Product Image" style="max-width: 100%; height: auto; border-radius: 10px;">
+        
+                <div class="btn-group" role="group" aria-label="Product Images">
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="changeImage('{{ product.image.url }}')">1</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="changeImage('{{ product.image2.url }}')">2</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="changeImage('{{ product.image3.url }}')">3</button>
+                </div>
+        
+              </div>
+        
+            </div>
+          </div>
+        </div>
+        
+        <br>
+        
+        <script>
+          function changeImage(imageUrl) {
+            document.getElementById('main-product-image').src = imageUrl;
+          }
+        </script>
+        
+        
+        
+        
+
+
+
+<script>
+  //pressed
+  $(document).on('click', '#add-cart', function(e){
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url:'{% url "cart_add" %}',
+      data: {
+        product_id: $('#add-cart').val(),
+        product_qty: $('#qty-cart option:selected').text(),
+        csrfmiddlewaretoken: '{{ csrf_token}}',
+        action: 'post'
+      },
+
+      success: function(json){
+        document.getElementById("cart_quantity").textContent = json.qty
+      },
+
+      error: function(xhr, errmsg, err){
+
+      }
+      
+    });
+    })
+
+    $(document).on('click', '.btn-like', function(e) {
+    e.preventDefault();
+    let productId = $(this).data('product-id');
+    let button = $(this);
+
+    $.ajax({
+      type: 'POST',
+      url: '{% url "favorite_toggle" %}',
+      data: {
+        product_id: productId,
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+      },
+      success: function(response) {
+        if (response.status === 'added') {
+          button.html('<i class="bi bi-heart-fill"></i> Liked')
+                .removeClass('btn-outline-danger')
+                .addClass('btn-danger');
+        } else if (response.status === 'removed') {
+          button.html('<i class="bi bi-heart"></i> Like')
+                .removeClass('btn-danger')
+                .addClass('btn-outline-danger');
+        }
+
+        
+        $('#favorite-products').load(location.href + ' #favorite-products > *');
+      },
+      error: function(xhr) {
+        alert('An error occurred: ' + xhr.status);
+      }
+    });
+  });
+
+
+    
+
+
+
+
+
+</script>
+{% endblock %}

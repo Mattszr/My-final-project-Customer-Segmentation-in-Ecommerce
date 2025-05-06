@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">{{ category }}</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">Category page</p>
+                </div>
+            </div>
+        </header>
+
+        {% include 'navbar.html' %}
+
+        <div class="container text-center mt-5">
+            <div class="alert alert-success shadow p-4 rounded">
+                <h2 class="mb-3">Thank you for your order!</h2>
+                <p class="lead">Your order has been successfully placed and is being processed.</p>
+                <a href="{% url 'index' %}" class="btn btn-outline-primary mt-3">Return to Home</a>
+            </div>
+        </div>
+         
+
+{% endblock %}
