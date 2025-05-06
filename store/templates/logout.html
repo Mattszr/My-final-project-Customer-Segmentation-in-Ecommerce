@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">You have successfully logged out</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Thank you for visiting. See you again!</p>
+        </div>
+    </div>
+</header>
+
+{% include 'navbar.html' %}
+
+<div class="container my-5 text-center">
+    <div class="card shadow-lg p-5 border-0">
+        <h3 class="mb-4">Would you like to continue?</h3>
+        <a href="{% url 'login' %}" class="btn btn-primary btn-lg mx-2">
+            Log In Again
+        </a>
+        <a href="{% url 'apindex' %}" class="btn btn-outline-secondary btn-lg mx-2">
+            Back to Homepage
+        </a>
+    </div>
+</div>
+{% endblock %}

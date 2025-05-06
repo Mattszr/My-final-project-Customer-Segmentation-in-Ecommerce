@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Hello {{ user.username }}</h1>
+                <p class="lead fw-normal text-white-50 mb-0">User Profile Page</p>
+            </div>
+        </div>
+    </header>
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5">
+        {% if user.is_authenticated %}
+            <!-- Profile Container -->
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title">{{ user.username }}</h4>
+                            <p class="card-text">Email: {{ user.email }}</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-8">
+                    <!-- ML Insights -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">ML-Based Insights</h5>
+                            {% if personalization.rfm_segment %}
+                                <p><strong>RFM Segment:</strong> {{ personalization.rfm_segment }}</p>
+                                <p><strong>Behavior Segment:</strong> {{ personalization.behavior_segment }}</p>
+                                <p><strong>Recommended Categories:</strong> {{ personalization.recommended_categories|join:", " }}</p>
+                            {% else %}
+                                <p><em>Personality insights not available.</em></p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    
+                    <!-- Favorite Products -->
+                    <div class="card shadow-sm mb-4" id="favorite-products">
+                        <div class="card-body">
+                        <h5 class="card-title">Favorite Products</h5>
+                        <div class="row">
+                            {% for product in favorite_products|slice:":4" %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card">
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">{{ product.name }}</h6>
+                                </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center">
+                                <p>No favorite products found.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'favorites-page' %}" class="btn btn-primary btn-sm">See All</a>
+                        </div>
+                    </div>
+
+                    <!-- Purchase History -->
+                    <div class="container mt-4">
+
+                        <!-- Purchase History -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Purchase History</h5>
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Date</th>
+                                            <th>Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for purchase in purchase_history %}
+                                            <tr>
+                                                <td>{{ purchase.product.name }}</td>
+                                                <td>{{ purchase.date|date:"Y-m-d" }}</td>
+                                                <td>
+                                                    {% if purchase.product.is_sale %}
+                                                        <small class="text-muted"><strike>${{ purchase.product.price }}</strike></small>
+                                                        <strong class="text-success">
+                                                            {% if purchase.discounted_total_price %}
+                                                                ${{ purchase.discounted_total_price }}
+                                                            {% else %}
+                                                                ${{ purchase.product.sale_price }}
+                                                            {% endif %}
+                                                        </strong>
+                                                    {% else %}
+                                                        ${{ purchase.product.price }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if purchase.discounted_total_price %}
+                                                        ${{ purchase.discounted_total_price }}
+                                                    {% else %}
+                                                        ${{ purchase.total_price }}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="4" class="text-center">No purchases found.</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">User Data Insights</h4>
+            
+                    {% if personalization %}
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Customer ID:</strong> {{ personalization.user_id }}</li>
+                            {% if personalization.rfm_segment is not None %}
+                                <li class="list-group-item"><strong>Recency:</strong> {{ personalization.recency }}</li>
+                                <li class="list-group-item"><strong>Frequency:</strong> {{ personalization.frequency }}</li>
+                                <li class="list-group-item"><strong>Monetary:</strong> {{ personalization.monetary }}</li>
+                                <li class="list-group-item"><strong>RFM Segment:</strong> {{ personalization.rfm_segment }}</li>
+                            {% endif %}
+                            {% if personalization.view_count is not None %}
+                                <li class="list-group-item"><strong>View Count:</strong> {{ personalization.view_count }}</li>
+                                <li class="list-group-item"><strong>Cart Count:</strong> {{ personalization.cart_count }}</li>
+                                <li class="list-group-item"><strong>Purchase Count:</strong> {{ personalization.purchase_count }}</li>
+                                <li class="list-group-item"><strong>Behavior Segment:</strong> {{ personalization.behavior_segment }}</li>
+                                <li class="list-group-item"><strong>Most Preferred Category:</strong> {{ personalization.favorite_category }}</li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info" role="alert">
+                            No personalization data available.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                You are not logged in. Please <a href="{% url 'login' %}">login</a>.
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

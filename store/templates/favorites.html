@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Hello {{ user.username }}</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Your Liked Products Page </p>
+        </div>
+    </div>
+</header>
+{% include 'navbar.html' %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Your Favourite products:</h2>
+    <div id="favorites-container" class="row g-4">
+        <!-- Fav products will be on here -->
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch("/api/favorites/", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer {{ request.user.auth_token }}",
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("error.");
+        }
+        return response.json();
+    })
+    .then(products => {
+        const container = document.getElementById("favorites-container");
+
+        if (products.length === 0) {
+            container.innerHTML = "<p>There is no any product yet.</p>";
+            return;
+        }
+
+        products.forEach(product => {
+            const card = document.createElement("div");
+            card.className = "col-md-4";
+
+            card.innerHTML = `
+                <div class="card h-100 shadow-sm">
+                    <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">${product.name}</h5>
+                        <p class="card-text">${product.description || "no desc."}</p>
+                        <div class="mt-auto">
+                            <a href="/product/${product.id}" class="btn btn-primary w-100">View the Product</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    })
+    .catch(error => {
+        console.error("API Hatası:", error);
+        document.getElementById("favorites-container").innerHTML =
+            "<div class='alert alert-danger'>products did not load.</div>";
+    });
+});
+</script>
+{% endblock %}
