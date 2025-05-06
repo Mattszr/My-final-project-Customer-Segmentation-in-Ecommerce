@@ -3,9 +3,6 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Django specific files
-*.sqlite3
-db.sqlite3
 
 # Virtual environments
 .venv/
@@ -39,8 +36,3 @@ node_modules/
 # Log files
 *.log
 
-# Media files
-media/
-
-# Static files (if you're using collectstatic, it’s better to exclude this)
-static/
